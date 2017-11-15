@@ -127,11 +127,31 @@ function importOBJ(name){
 	// load a resource
 	loader.load(
 		// resource URL
-		'models/cube.obj',
+		'models/' + name,
 		// called when resource is loaded
 		function ( object ) {
 
 			scene.add( object );
+			var req = new XMLHttpRequest();
+  		req.open('GET', 'models/' + name + '.json', false);
+  		req.send(null);
+  		if(req.status == 0){
+    		dump(req.responseText);
+				console.log('request failed')
+  		}
+  		else if(req.status == 200){
+				var vectors = JSON.parse(req.responseText);
+				console.log(vectors)
+				for(var i = 0; i<vectors.length; i++){
+					var geometry = new THREE.SphereGeometry(0.2);
+					var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+					var sphere = new THREE.Mesh( geometry, material );
+					sphere.position.x = vectors[i].v_1;
+					sphere.position.y = vectors[i].v_2;
+					sphere.position.z = vectors[i].v_3;
+					scene.add( sphere );
+				}
+			}
 
 		},
 		// called when loading is in progresses
@@ -159,4 +179,4 @@ setUp();
 
 render();
 
-importOBJ("cube.obj");
+importOBJ("plane.obj");
